@@ -1,5 +1,10 @@
 package io.unbong.ubconfig.client.spring;
 
+import io.unbong.ubconfig.client.repository.UbRepository;
+import org.springframework.context.ApplicationContext;
+
+import java.util.Map;
+
 /**
  * Description
  *
@@ -8,6 +13,13 @@ package io.unbong.ubconfig.client.spring;
  */
 public interface UbConfigService {
 
+     static UbConfigService getDefault(ConfigMeata meta, ApplicationContext applicationContext){
+          Map<String, String> config = UbRepository.getDefault(meta).getConfig();
+
+
+//          applicationContext.
+          return new UbConfigServiceImpl(config);
+     }
 
      public String[] getPropertyNames();
 
