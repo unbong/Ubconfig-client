@@ -1,9 +1,5 @@
 package io.unbong.ubconfig.client.spring;
 
-import io.unbong.ubconfig.client.repository.UbRepository;
-import io.unbong.ubconfig.client.spring.UbConfigService;
-import io.unbong.ubconfig.client.spring.UbConfigServiceImpl;
-import io.unbong.ubconfig.client.spring.UbPropertiesSource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -15,9 +11,6 @@ import org.springframework.core.PriorityOrdered;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * ub property sources processor
@@ -46,22 +39,16 @@ public class PropertySourcesProcessor implements BeanFactoryPostProcessor , Appl
             return ;
         }
 
-        // todo
-        // get configuration from server by  http request
-//        Map<String, String> config = new HashMap<String, String>();
-//        config.put("ub.a", "dev199");
-//        config.put("ub.b", "b199");
-//        config.put("ub.c", "c99");
 
         String app =environment.getProperty(UB_CONFIG_APP, "app1");
         String env =environment.getProperty(UB_CONFIG_ENV, "dev");
         String ns =environment.getProperty(UB_CONFIG_NS, "public");
         String configUrl =environment.getProperty(UB_CONFIG_SERVER_URL, "http://localhost:9129");
 
-        ConfigMeata configMeata = new ConfigMeata(app, env, ns, configUrl);
+        ConfigMeta configMeta = new ConfigMeta(app, env, ns, configUrl);
 
 
-        UbConfigService configService = UbConfigService.getDefault(configMeata, applicationContext);
+        UbConfigService configService = UbConfigService.getDefault(configMeta, applicationContext);
 
         UbPropertiesSource propertiesSource = new UbPropertiesSource(UB_PROPERTY_SOURCE, configService);
 

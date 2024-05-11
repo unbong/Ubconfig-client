@@ -1,6 +1,7 @@
 package io.unbong.ubconfig.client.repository;
 
-import io.unbong.ubconfig.client.spring.ConfigMeata;
+import io.unbong.ubconfig.client.spring.ConfigMeta;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
 
@@ -10,17 +11,13 @@ import java.util.Map;
  * @author <a href="ecunbong@gmail.com">unbong</a>
  * 2024-05-06 10:26
  */
-public interface UbRepository {
+public interface UbRepository extends UbRepositoryChangeListener {
 
-    static UbRepository getDefault(ConfigMeata meata){
-        return new UbRepositoryImpl(meata);
+    static UbRepository getDefault(ConfigMeta meta, ApplicationContext applicationContext){
+        return new UbRepositoryImpl(meta, applicationContext);
     };
     Map<String, String> getConfig();
 
-    interface  ChangeListener{
-        void onChange(ChangeEvent event);
-    }
 
-    record  ChangeEvent(ConfigMeata meta, Map<String, String> config){};
 
 }

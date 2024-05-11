@@ -1,5 +1,7 @@
 package io.unbong.ubconfig.client.spring;
 
+import org.springframework.context.ApplicationContext;
+
 import java.util.Map;
 
 /**
@@ -12,7 +14,7 @@ public class UbConfigServiceImpl implements UbConfigService{
 
     Map<String, String> config;
 
-    public UbConfigServiceImpl(Map<String, String> config) {
+    public UbConfigServiceImpl(Map<String, String> config, ApplicationContext applicationContext) {
         this.config = config;
     }
 

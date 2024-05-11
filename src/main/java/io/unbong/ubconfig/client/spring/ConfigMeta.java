@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConfigMeata {
+public class ConfigMeta {
 
     String app;
     String env;

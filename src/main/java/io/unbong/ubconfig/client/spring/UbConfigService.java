@@ -13,12 +13,10 @@ import java.util.Map;
  */
 public interface UbConfigService {
 
-     static UbConfigService getDefault(ConfigMeata meta, ApplicationContext applicationContext){
-          Map<String, String> config = UbRepository.getDefault(meta).getConfig();
+     static UbConfigService getDefault(ConfigMeta meta, ApplicationContext applicationContext){
+          Map<String, String> config = UbRepository.getDefault(meta, applicationContext).getConfig();
 
-
-//          applicationContext.
-          return new UbConfigServiceImpl(config);
+          return new UbConfigServiceImpl(config, applicationContext);
      }
 
      public String[] getPropertyNames();

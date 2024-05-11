@@ -2,10 +2,11 @@ package io.unbong.ubconfig.client.repository;
 
 import cn.kimmking.utils.HttpUtils;
 import com.alibaba.fastjson.TypeReference;
-import io.unbong.ubconfig.client.spring.ConfigMeata;
+import io.unbong.ubconfig.client.spring.ConfigMeta;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +26,15 @@ import java.util.concurrent.TimeUnit;
 public class UbRepositoryImpl implements UbRepository{
 
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
-
+    ApplicationContext applicationContext;
     Log log = LogFactory.getLog(this.getClass());
-    public UbRepositoryImpl(ConfigMeata meata) {
+    public UbRepositoryImpl(ConfigMeta meata, ApplicationContext applicationContext) {
         this.meata = meata;
-
+        this.applicationContext =applicationContext;
         executorService.scheduleWithFixedDelay(this::hearthBeat, 1000, 5000, TimeUnit.MILLISECONDS);
     }
 
-    ConfigMeata meata;
+    ConfigMeta meata;
 
     Map<String, Long> versions = new HashMap<>();
 
@@ -78,4 +79,9 @@ public class UbRepositoryImpl implements UbRepository{
     }
 
 
+    @Override
+    public void onChange(UbRepositoryChangeEvent event) {
+
+
+    }
 }
