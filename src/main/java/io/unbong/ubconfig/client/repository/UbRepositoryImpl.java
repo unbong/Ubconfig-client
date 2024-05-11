@@ -4,6 +4,7 @@ import cn.kimmking.utils.FieldUtils;
 import cn.kimmking.utils.HttpUtils;
 import com.alibaba.fastjson.TypeReference;
 import io.unbong.ubconfig.client.spring.ConfigMeta;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
@@ -27,12 +28,11 @@ import java.util.concurrent.TimeUnit;
  * 2024-05-06 10:28
  */
 
-
+@Slf4j
 public class UbRepositoryImpl implements UbRepository{
 
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     ApplicationContext applicationContext;
-    Log log = LogFactory.getLog(this.getClass());
 
     List<UbRepositoryChangeListener> listeners  = new ArrayList<>();
     public UbRepositoryImpl(ConfigMeta meata, ApplicationContext applicationContext) {
@@ -49,20 +49,30 @@ public class UbRepositoryImpl implements UbRepository{
 
 
     private void hearthBeat(){
-        String versionPath  = meata.versionPath();
 
-        Long version = HttpUtils.httpGet(versionPath,new TypeReference<Long>(){});
-        String key = meata.genKey();
-        Long oldVersion = versions.getOrDefault(key, -1l);
-        if(version > oldVersion){
-            log.debug("------> [CONFIG]  need update. config version " +  version + " oldVersion " + oldVersion);
-            versions.put(key, version);
-            configMap.put(key, findAll());
-            listeners.forEach(listener -> {
-                listener.onChange(new UbRepositoryChangeListener.
-                         UbRepositoryChangeEvent(meata, configMap));
-            });
+        try{
+            String versionPath  = meata.versionPath();
+
+            Long version = HttpUtils.httpGet(versionPath,new TypeReference<Long>(){});
+            String key = meata.genKey();
+            Long oldVersion = versions.getOrDefault(key, -1l);
+            if(version > oldVersion){
+                log.debug("------> [CONFIG]  need update. config version " +  version + " oldVersion " + oldVersion);
+                versions.put(key, version);
+                Map<String, String> configs = findAll();
+                configMap.put(key, configs);
+                log.debug("------> [CONFIG]  new configs {} ",configMap);
+
+                listeners.forEach(listener -> {
+                    listener.onChange(new UbRepositoryChangeListener.
+                            UbRepositoryChangeEvent<Map<String,String>>(meata, configs));
+                });
+            }
+        }catch (Exception ex)
+        {
+            log.error(ex.getMessage());
         }
+
     }
 
     @Override
