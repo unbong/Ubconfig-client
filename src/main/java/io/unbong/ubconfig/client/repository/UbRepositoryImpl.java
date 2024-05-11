@@ -1,13 +1,18 @@
 package io.unbong.ubconfig.client.repository;
 
+import cn.kimmking.utils.FieldUtils;
 import cn.kimmking.utils.HttpUtils;
 import com.alibaba.fastjson.TypeReference;
 import io.unbong.ubconfig.client.spring.ConfigMeta;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.cloud.context.environment.EnvironmentChangeEvent;
 import org.springframework.context.ApplicationContext;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +33,8 @@ public class UbRepositoryImpl implements UbRepository{
     ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
     ApplicationContext applicationContext;
     Log log = LogFactory.getLog(this.getClass());
+
+    List<UbRepositoryChangeListener> listeners  = new ArrayList<>();
     public UbRepositoryImpl(ConfigMeta meata, ApplicationContext applicationContext) {
         this.meata = meata;
         this.applicationContext =applicationContext;
@@ -40,6 +47,7 @@ public class UbRepositoryImpl implements UbRepository{
 
     Map<String, Map<String, String>> configMap = new HashMap<>();
 
+
     private void hearthBeat(){
         String versionPath  = meata.versionPath();
 
@@ -50,6 +58,10 @@ public class UbRepositoryImpl implements UbRepository{
             log.debug("------> [CONFIG]  need update. config version " +  version + " oldVersion " + oldVersion);
             versions.put(key, version);
             configMap.put(key, findAll());
+            listeners.forEach(listener -> {
+                listener.onChange(new UbRepositoryChangeListener.
+                         UbRepositoryChangeEvent(meata, configMap));
+            });
         }
     }
 
@@ -65,6 +77,12 @@ public class UbRepositoryImpl implements UbRepository{
         return findAll();
     }
 
+    @Override
+    public void addChangeListener(UbRepositoryChangeListener<Map<String,String>>listener) {
+        listeners.add(listener);
+
+    }
+
     @NotNull
     private Map<String, String> findAll() {
         String listPath = meata.getConfigUrl() + "/list?app=" + meata.getApp()
@@ -78,10 +96,4 @@ public class UbRepositoryImpl implements UbRepository{
         return resultMap;
     }
 
-
-    @Override
-    public void onChange(UbRepositoryChangeEvent event) {
-
-
-    }
 }

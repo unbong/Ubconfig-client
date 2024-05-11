@@ -11,13 +11,14 @@ import java.util.Map;
  * @author <a href="ecunbong@gmail.com">unbong</a>
  * 2024-05-06 10:26
  */
-public interface UbRepository extends UbRepositoryChangeListener {
+public interface UbRepository {
 
     static UbRepository getDefault(ConfigMeta meta, ApplicationContext applicationContext){
         return new UbRepositoryImpl(meta, applicationContext);
     };
     Map<String, String> getConfig();
 
+    void addChangeListener(UbRepositoryChangeListener<Map<String,String>> listener);
 
 
 }

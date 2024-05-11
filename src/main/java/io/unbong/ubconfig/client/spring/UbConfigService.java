@@ -1,6 +1,7 @@
 package io.unbong.ubconfig.client.spring;
 
 import io.unbong.ubconfig.client.repository.UbRepository;
+import io.unbong.ubconfig.client.repository.UbRepositoryChangeListener;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Map;
@@ -11,12 +12,14 @@ import java.util.Map;
  * @author <a href="ecunbong@gmail.com">unbong</a>
  * 2024-05-05 10:48
  */
-public interface UbConfigService {
+public interface UbConfigService extends UbRepositoryChangeListener<Map<String,String>> {
 
      static UbConfigService getDefault(ConfigMeta meta, ApplicationContext applicationContext){
-          Map<String, String> config = UbRepository.getDefault(meta, applicationContext).getConfig();
-
-          return new UbConfigServiceImpl(config, applicationContext);
+          UbRepository repository = UbRepository.getDefault(meta, applicationContext);
+          Map<String, String> config = repository.getConfig();
+          UbConfigService configService =   new UbConfigServiceImpl(config, applicationContext);
+          repository.addChangeListener(configService);
+          return configService;
      }
 
      public String[] getPropertyNames();
