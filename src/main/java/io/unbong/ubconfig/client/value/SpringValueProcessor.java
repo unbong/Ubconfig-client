@@ -55,8 +55,6 @@ public class SpringValueProcessor implements BeanPostProcessor, BeanFactoryAware
                                 VALUE_HOLDER.add(key, springValue);
                             }
                     );
-
-
                 }
         );
         return bean;

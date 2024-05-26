@@ -25,6 +25,8 @@ public class UbConfigRegister implements ImportBeanDefinitionRegistrar {
 
         registerClass(registry, PropertySourcesProcessor.class);
         registerClass(registry, SpringValueProcessor.class);
+
+
     }
 
     private static void registerClass(BeanDefinitionRegistry registry, Class<?> clazz) {
